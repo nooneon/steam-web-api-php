@@ -83,12 +83,18 @@ class User extends Client implements IUser {
 
 		// Clean up the games
 		$steamIds = array();
+		$friends = array();
 
 		foreach ($client->friends as $friend) {
 			$steamIds[] = $friend->steamid;
+			if (count($steamIds) == 100) {
+				$friends = array_merge($friends, $this->GetPlayerSummaries(implode(',', $steamIds)));
+				$steamIds = array();
+			}
 		}
 
-		$friends = $this->GetPlayerSummaries(implode(',', $steamIds));
+		if (count($steamIds) > 0)
+			$friends = array_merge($friends, $this->GetPlayerSummaries(implode(',', $steamIds)));
 
 		return $friends;
 	}
